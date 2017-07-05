@@ -37,12 +37,21 @@ app.post('/', function(request, response) {
       // ).on('error', function(err){
       //   console.log("something went wrong...", err);
       // });
+      var movieId;
+      var data;
+      mdb.searchMovie({ query: 'Iron+man' }, (err, res) => {
+          // console.log(res)
+          movieId = res.results[0].id;
+          //console.log(err);
+      }).movieCredits({ id: movieId }, (err, res) => {
+             data = res;
+             //get director
+      var director = data.crew.filter(function(item){ return item.job == 'Director';})[0];
 
-      mdb.searchMovie({ query: api_app.getArgument("movie") }, (err, res) => {
-          console.log(res);
-      api_app.ask(res);
-      console.log(err);
-  });
+           api_app.ask(director.name);
+
+      });
+
 
   }
 
