@@ -2,6 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
 const App = require('actions-on-google').ApiAiApp;
+var mdb = require('moviedb')('b8e5232ac7a2496540a6e80b935abdd3');
 var Client = require('node-rest-client').Client;
 var client = new Client();
 
@@ -27,22 +28,29 @@ app.post('/', function(request, response) {
     console.log('ARGUMENTS CHECKING: '+api_app.getArgument("movie")+"------"+api_app.getArgument("attributes"));
     // api_app.ask('The answer is '+api_app.getArgument("movie")+"------"+api_app.getArgument("attributes"));
 
-    client.get("http://www.omdbapi.com/?t="+api_app.getArgument("movie").replace(" ","+")+"&apikey=c22bc403",
-      function (data, response) {
-        // parsed response body as js object 
-        console.log("DATA --- " + JSON.stringify(title));
-        api_app.ask("TESTING THIS STUFF");
-      }
-    ).on('error', function(err){
-      console.log("something went wrong...", err);
-    });
+    // client.get("http://www.omdbapi.com/?t="+api_app.getArgument("movie").replace(" ","+")+"&apikey=c22bc403",
+      //   function (data, response) {
+      //     // parsed response body as js object
+      //     console.log("DATA --- " + JSON.stringify(title));
+      //     api_app.ask("TESTING THIS STUFF");
+      //   }
+      // ).on('error', function(err){
+      //   console.log("something went wrong...", err);
+      // });
+
+      mdb.searchMovie({ query: api_app.getArgument("movie") }, (err, res) => {
+          console.log(res);
+      api_app.ask(res);
+      console.log(err);
+  });
 
   }
 
   const actionMap = new Map();
+
   actionMap.set('movie.details', responseHandler);
 
   api_app.handleRequest(actionMap);
 });
 
-app.listen(8000);
+app.listen(8080);
