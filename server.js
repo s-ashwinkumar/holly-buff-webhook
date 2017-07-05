@@ -30,9 +30,7 @@ app.post('/', function(request, response) {
     client.get("http://www.omdbapi.com/?t="+api_app.getArgument("movie").replace(" ","+")+"&apikey=c22bc403",
       function (data, response) {
         // parsed response body as js object 
-        console.log("DATA --- " + data.title);
-        // raw response 
-        console.log("RESPONSE --- " + response.title);
+        console.log("DATA --- " + JSON.stringify(title));
         api_app.ask("TESTING THIS STUFF");
       }
     ).on('error', function(err){
