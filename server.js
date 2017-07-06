@@ -32,12 +32,11 @@ app.post('/', function(request, response) {
     var movieId;
     var data;
     mdb.searchMovie({ query: api_app.getArgument("movie") }, (err, res) => {
-      console.log("RESULT --- "+res)
+      console.log("RESULT --- "+JSON.stringify(res))
       movieId = res.results[0].id;
-      console.log("ERROR --- "+err);
     }).movieCredits({ id: movieId }, (err, res) => {
       data = res;
-      console.log("RESULT of credits--- "+res)
+      console.log("RESULT of credits--- "+JSON.stringify(res))
       //get director
       var director = data.crew.filter(function(item){ return item.job.toLowerCase() == api_app.getArgument("attributes");})[0];
       api_app.ask(director.name);
@@ -54,7 +53,7 @@ app.post('/', function(request, response) {
   api_app.handleRequest(actionMap);
 });
 
-app.listen(8080);
+app.listen(8000);
 
 
 
