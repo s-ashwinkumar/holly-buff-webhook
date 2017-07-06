@@ -28,29 +28,21 @@ app.post('/', function(request, response) {
     console.log('ARGUMENTS CHECKING: '+api_app.getArgument("movie")+"------"+api_app.getArgument("attributes"));
     // api_app.ask('The answer is '+api_app.getArgument("movie")+"------"+api_app.getArgument("attributes"));
 
-    // client.get("http://www.omdbapi.com/?t="+api_app.getArgument("movie").replace(" ","+")+"&apikey=c22bc403",
-      //   function (data, response) {
-      //     // parsed response body as js object
-      //     console.log("DATA --- " + JSON.stringify(title));
-      //     api_app.ask("TESTING THIS STUFF");
-      //   }
-      // ).on('error', function(err){
-      //   console.log("something went wrong...", err);
-      // });
-      var movieId;
-      var data;
-      mdb.searchMovie({ query: 'Iron+man' }, (err, res) => {
-          // console.log(res)
-          movieId = res.results[0].id;
-          //console.log(err);
-      }).movieCredits({ id: movieId }, (err, res) => {
-             data = res;
-             //get director
-      var director = data.crew.filter(function(item){ return item.job == 'Director';})[0];
 
-           api_app.ask(director.name);
+    var movieId;
+    var data;
+    mdb.searchMovie({ query: api_app.getArgument("movie") }, (err, res) => {
+      console.log("RESULT --- "+res)
+      movieId = res.results[0].id;
+      console.log("ERROR --- "+err);
+    }).movieCredits({ id: movieId }, (err, res) => {
+      data = res;
+      console.log("RESULT of credits--- "+res)
+      //get director
+      var director = data.crew.filter(function(item){ return item.job.toLowerCase() == api_app.getArgument("attributes");})[0];
+      api_app.ask(director.name);
 
-      });
+    });
 
 
   }
@@ -63,3 +55,17 @@ app.post('/', function(request, response) {
 });
 
 app.listen(8080);
+
+
+
+
+// Backup code
+    // client.get("http://www.omdbapi.com/?t="+api_app.getArgument("movie").replace(" ","+")+"&apikey=c22bc403",
+      //   function (data, response) {
+      //     // parsed response body as js object
+      //     console.log("DATA --- " + JSON.stringify(title));
+      //     api_app.ask("TESTING THIS STUFF");
+      //   }
+      // ).on('error', function(err){
+      //   console.log("something went wrong...", err);
+      // });
