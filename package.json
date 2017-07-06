@@ -13,7 +13,6 @@
     "body-parser": "^1.14.1",
     "express": "^4.13.3",
     "actions-on-google": "^1.0.0",
-    "node-rest-client": "^3.0.0",
     "moviedb": "0.2.8"
   }
 }
