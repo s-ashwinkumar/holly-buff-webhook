@@ -1,8 +1,11 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var app = express();
+var express = require('express'),
+    https = require('https'),
+    fs = require('fs'),
+    bodyParser = require('body-parser'),
+    app = express(),
+    mdb = require('moviedb')('b8e5232ac7a2496540a6e80b935abdd3');
 const App = require('actions-on-google').ApiAiApp;
-var mdb = require('moviedb')('b8e5232ac7a2496540a6e80b935abdd3');
+
 // var async = require(“async”);
 //Allow all requests from all domains & localhost
 app.all('/*', function(req, res, next) {
@@ -12,8 +15,20 @@ app.all('/*', function(req, res, next) {
   next();
 });
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.configure(function() {
+    app.use(express.bodyParser());
+    app.use(express.methodOverride());
+    app.use(express.static('public'));
+    app.use(app.router);
+});
+
+app.configure('development', function(){
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+});
+
+app.configure('production', function(){
+  app.use(express.errorHandler());
+});
 
 app.post('/', function(request, response) {
   const api_app = new App({request, response});
@@ -48,7 +63,15 @@ app.post('/', function(request, response) {
   api_app.handleRequest(actionMap);
 });
 
-app.listen(8000);
+var options = {
+    key  : fs.readFileSync('ssl/key.pem'),
+    ca   : fs.readFileSync('ssl/csr.pem'),
+    cert : fs.readFileSync('ssl/cert.pem')
+}
+
+https.createServer(options, app).listen(PORT, HOST, null, function() {
+    console.log('Server listening on port %d in %s mode', this.address().port, app.settings.env);
+});
 
 
 
