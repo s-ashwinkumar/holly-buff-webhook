@@ -11,7 +11,7 @@ app.get('/', (req, res) => {
 });
 
 app.post('/', (request, response) => {
-  const api_app = new actionsOnGoogle({request, response});
+  // const api_app = new actionsOnGoogle({request, response});
   console.log('Request headers: ' + JSON.stringify(request.headers));
   console.log('Request body: ' + JSON.stringify(request.body));
 
@@ -44,7 +44,7 @@ app.post('/', (request, response) => {
 if (module === require.main) {
   // [START server]
   // Start the server
-  const server = app.listen(process.env.PORT || 8081, () => {
+  const server = app.listen(process.env.PORT || 8080, () => {
     const port = server.address().port;
     console.log(`App listening on port ${port}`);
   });
