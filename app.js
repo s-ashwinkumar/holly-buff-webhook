@@ -33,13 +33,10 @@ app.post('/', (request, response) => {
         api_app.ask(data_point.name);
       });
     });
-
   }
 
   const actionMap = new Map();
-
   actionMap.set('movie.details', responseHandler);
-
   api_app.handleRequest(actionMap);  
 });
 
