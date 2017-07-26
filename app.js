@@ -1,22 +1,17 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var app = express();
-const App = require('actions-on-google').ApiAiApp;
-var mdb = require('moviedb')('b8e5232ac7a2496540a6e80b935abdd3');
-// var async = require(“async”);
-//Allow all requests from all domains & localhost
-app.all('/*', function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "X-Requested-With, Content-Type, Accept");
-  res.header("Access-Control-Allow-Methods", "POST, GET");
-  next();
+'use strict';
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser');
+const mdb = require('moviedb')('b8e5232ac7a2496540a6e80b935abdd3');
+const actionsOnGoogle = require('actions-on-google').ApiAiApp;
+// [START hello_world]
+// Say hello!
+app.get('/', (req, res) => {
+  res.status(200).send('Its alive...');
 });
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
-
-app.post('/', function(request, response) {
-  const api_app = new App({request, response});
+app.post('/', (request, response) => {
+  const api_app = new actionsOnGoogle({request, response});
   console.log('Request headers: ' + JSON.stringify(request.headers));
   console.log('Request body: ' + JSON.stringify(request.body));
 
@@ -33,24 +28,29 @@ app.post('/', function(request, response) {
       mdb.movieCredits({ id: movieId }, function(err,res){
         data = res;
         console.log("RESULT of credits--- "+JSON.stringify(res))
-        //get director
-        var director = data.crew.filter(function(item){ return item.job.toLowerCase() == api_app.getArgument("attributes");})[0];
-        api_app.ask(director.name);
+        //get required data point (like director)
+        var data_point = data.crew.filter(function(item){ return item.job.toLowerCase() == api_app.getArgument("attributes");})[0];
+        api_app.ask(data_point.name);
       });
     });
-
   }
 
   const actionMap = new Map();
-
   actionMap.set('movie.details', responseHandler);
-
-  api_app.handleRequest(actionMap);
+  api_app.handleRequest(actionMap);  
 });
 
-app.listen(8000);
-
-
+// [END hello_world]
+if (module === require.main) {
+  // [START server]
+  // Start the server
+  const server = app.listen(process.env.PORT || 8080, () => {
+    const port = server.address().port;
+    console.log(`App listening on port ${port}`);
+  });
+  // [END server]
+}
+module.exports = app;
 
 
 // Backup code

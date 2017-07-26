@@ -1,18 +1,55 @@
 {
-  "name": "simple-server",
+  "name": "HollybuffServer",
   "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
+  "description": "Back end webhook for holly buff project",
+  "repository": "https://github.com/s-ashwinkumar/holly-buff-webhook.git",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node app.js",
+    "lint": "semistandard \"**/*.js\"",
+    "ava": "ava -s -t 30s --tap **/*.test.js | tap-dot",
+    "test": "npm run lint && npm run ava",
+    "cover": "nyc --cache npm test; nyc report --reporter=html",
+    "e2e": "mocha test/e2e.js -t 1800000",
+    "unify": "node scripts/unify"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Ruby dooby doos",
+  "contributors": [
+    {
+      "name": "Ashwin Kumar Subramanian",
+      "email": "s.ashwinkumar2490@gmail.com"
+    },
+    {
+      "name": "Akash Ravindranath",
+      "email": "akashravindranath@gmail.com"
+    }
+  ],
+  "license": "Apache-2.0",
+  "semistandard": {
+    "globals": [
+      "after",
+      "afterEach",
+      "before",
+      "beforeEach",
+      "describe",
+      "it"
+    ]
+  },
+  "engines": {
+    "node": ">=4.3.2"
+  },
   "dependencies": {
-    "body-parser": "^1.14.1",
-    "express": "^4.13.3",
+    "body-parser": "~1.17.1",
+    "express": "~4.15.2",
     "actions-on-google": "^1.0.0",
     "moviedb": "0.2.8"
+  },
+  "devDependencies": {
+    "ava": "~0.19.1",
+    "nodejs-repo-tools": "git+https://git@github.com/GoogleCloudPlatform/nodejs-repo-tools.git",
+    "supertest": "~3.0.0",
+    "tap-dot": "~1.0.5"
+  },
+  "engines": {
+    "node": ">=4.3.2"
   }
 }
