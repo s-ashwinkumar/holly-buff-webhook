@@ -22,6 +22,7 @@ dataMapper.set("editor", "credits");
 dataMapper.set("original music composer", "credits");
 dataMapper.set("cast", "credits"); // get top 3 of cast . Get the name and character
 dataMapper.set("crew", "credits"); // get director , producer and musician
+dataMapper.set("vote_average", "credits");
 
 // dataMapper.set("release_date","details");
 // dataMapper.set("overview","details");
@@ -76,7 +77,7 @@ app.post('/', (request, response) => {
   // console.log('Request headers: ' + JSON.stringify(request.headers));
   // console.log('Request body: ' + JSON.stringify(request.body));
   // Fulfill action business logic
-  function responseHandler (api_app) {
+  function movieDetails (api_app) {
     // Complete your fulfillment logic and send a response
     const inputAttr = api_app.getArgument("attributes");
     const movieName = api_app.getArgument("movie");
@@ -102,6 +103,9 @@ app.post('/', (request, response) => {
             var cast = data.credits.cast;
             result = `${cast[0].name}, ${cast[1].name} and ${cast[2].name} are some of the cast members`;
             break;
+          case "vote_average":
+            result = `I don't know about that but according to my sources it has an average of ${data[inputAttr]}!`;
+            break;
           default:
             result = "The " + inputAttr + " of " + movieName + " is " +
               data.credits.crew.filter( item => { return item.job.toLowerCase() == inputAttr;})[0].name;
@@ -123,25 +127,25 @@ app.post('/', (request, response) => {
 
     const getMovieDetails = function(id) {
       tmdb.movie.details({movie_id: id, append_to_response: "credits"})
-      .then( data => {
-        movieData = data;
-        myCache.set( id, movieData, 120 );
-        sendAppropriateResponse(movieData);
-      }).catch( error => {
-        console.log("ERROR getting movie details "+JSON.stringify(error));
-        api_app.ask("Sorry, can you try again please ?");
-      });
+        .then( data => {
+          movieData = data;
+          myCache.set( id, movieData, 120 );
+          sendAppropriateResponse(movieData);
+        }).catch( error => {
+          console.log("ERROR getting movie details "+JSON.stringify(error));
+          api_app.ask("Sorry, can you try again please ?");
+        });
     }
 
     const getMovieId = function(name) {
       tmdb.search.movie({ query: name })
-      .then( movies => {
-        movieId = movies.results[0].id
-        getMovieDetails(movieId);
-      }).catch( error => {
-        console.log("ERROR searching movie - "+JSON.stringify(error));
-        api_app.ask("Oops, either the service is down or I just forgot the movie name. Can you start over with the movie ?");
-      });
+        .then( movies => {
+          movieId = movies.results[0].id
+          getMovieDetails(movieId);
+        }).catch( error => {
+          console.log("ERROR searching movie - "+JSON.stringify(error));
+          api_app.ask("Oops, either the service is down or I just forgot the movie name. Can you start over with the movie ?");
+        });
     }
 
     if(movieId == undefined) {
@@ -154,8 +158,38 @@ app.post('/', (request, response) => {
     }
   }
 
+  function currentMovies (api_app) {
+    var now_playing = myCache.get("now_playing");
+
+    const sendAppropriateResponse = function(result) {
+      api_app.tell(result);
+    }
+
+    const getNowPlaying = function (){
+      tmdb.movie.now_playing({})
+        .then( movies => {
+          var result = "";
+          for(var i=0;i<5;i++){
+            result += `${movies.results[i].original_title}, `
+          }
+          result += "are some of the movies that are playing now !"
+          sendAppropriateResponse(result);
+        }).catch( error => {
+          console.log("ERROR current movies - "+JSON.stringify(error));
+          api_app.ask("Oops, can you try asking for this again ?");
+        });
+    }
+
+    if (now_playing == undefined){
+      getNowPlaying();
+    }else{
+      sendAppropriateResponse(now_playing);
+    }
+
+  }
   const actionMap = new Map();
-  actionMap.set('movie.details', responseHandler);
+  actionMap.set('movie.details', movieDetails);
+  actionMap.set('movie.current', currentMovies);
   api_app.handleRequest(actionMap);  
 });
 
