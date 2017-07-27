@@ -3,7 +3,6 @@ const express = require('express');
 const app = express();
 const NodeCache = require( "node-cache" );
 const myCache = new NodeCache();
-const mdb = require('moviedb')('b8e5232ac7a2496540a6e80b935abdd3');
 const tmdb = new (require('tmdbapi'))({
     apiv3: 'b8e5232ac7a2496540a6e80b935abdd3'
 });
