@@ -173,6 +173,7 @@ app.post('/', (request, response) => {
             result += `${movies.results[i].original_title}, `
           }
           result += "are some of the movies that are playing now !"
+          myCache.set( "now_playing", result, 300 );
           sendAppropriateResponse(result);
         }).catch( error => {
           console.log("ERROR current movies - "+JSON.stringify(error));
