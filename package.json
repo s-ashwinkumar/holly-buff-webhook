@@ -38,18 +38,18 @@
     "node": ">=4.3.2"
   },
   "dependencies": {
+    "actions-on-google": "^1.0.0",
     "body-parser": "~1.17.1",
     "express": "~4.15.2",
-    "actions-on-google": "^1.0.0",
-    "moviedb": "0.2.8"
+    "moviedb": "0.2.8",
+    "node-cache": "^4.1.1",
+    "themoviedbclient": "^0.2.0",
+    "tmdbapi": "^1.0.2"
   },
   "devDependencies": {
     "ava": "~0.19.1",
     "nodejs-repo-tools": "git+https://git@github.com/GoogleCloudPlatform/nodejs-repo-tools.git",
     "supertest": "~3.0.0",
     "tap-dot": "~1.0.5"
-  },
-  "engines": {
-    "node": ">=4.3.2"
   }
 }
